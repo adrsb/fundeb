@@ -1,0 +1,202 @@
+
+-----------------------------------------------
+- DATA WRANGLING/MUNGING
+-----------------------------------------------
+    - CAPTAÇÃO DOS DADOS (CRIAR, ARQUIVOS, COMPACTADOS, BANCOS DE DADOS, API'S, WEB SCRAPING, ETC)
+    - ANÁLISE EXPLORATÓRIA (POR TIPO DE VARIÁVEL)
+        - VARIÁVEIS INDEPENDENTES
+            - VARIÁVEIS NUMÉRICAS (DISCRETAS/CONTÍNUAS)
+            - VARIÁVEIS CATEGÓRICAS (NOMINAL/ORDINAL)
+        - VARIÁVEL ALVO
+    - LIMPEZA/TRATAMENTO DOS DADOS (RESOLUÇÃO DE ANOMALIAS)
+        - TRATAMENTO INICIAL
+            - PARTICIONAMENTO (CALCULO AMOSTRA)
+            - VETORIZAÇÃO
+            - CONCATENAÇÕES
+            - MESCLAGEM
+            - CONVERSÕES
+            - TRANSPOSE/T (converter linhas em colunas ou vice versa)
+            - PIVOT/MELT (tabela dinâmica)
+            - STACK/UNSTACK ()
+            - EXPLODE/UNEXPLODE (divisão de uma lista de um registro em vários registros individual por item da lista)
+        - TRATAMENTO DE ANOMALIAS
+            - DADOS CONSTANTES
+            - DADOS DUPLICADOS
+            - DADOS SUJOS (fuzzywuzzy.process.match)
+            - DADOS INCONSISTENTES
+            - VALORES AUSENTES
+                - NUMÉRICOS (MODA/MÉDIA/MEDIANA/REVERSO/PROGRESSIVO/MACHINE LEARN)
+                - CATEGÓRICOS (MODA/ASSOCIAÇÃO/UNKNOWN/MACHINE LEARN)
+            - OUTLIERS***
+    - PRÉ PROCESSAMENTO PARA MACHINE LEARN
+        - ENGENHARIA DE ATRIBUTOS (***O QUE FAZ A DIFERENÇA***)
+            - FEATURE SELECTION
+                - VARIÁVEIS NUMÉRICAS (CORRELAÇÃO)
+                - VARIÁVEIS CATEGÓRICAS (TABELAS DE FREQUÊNCIA)
+            - FEATURE EXTRACTION
+                - AGREGAÇÃO/DECOMPOSIÇÃO DE ATRIBUTOS
+                - CATEGORIZAÇÃO/RECATEGORIZAÇÃO
+                - GENERALIZAÇÃO/DISCRETIZAÇÃO (REDUZIR/AUMENTAR NÍVEIS)
+                - RFE (RECURSIVE FEATURE ELIMINATION)
+        - TRATAMENTO DE OUTLIERS
+            - LOWER/UPPER QUARTIS (Q1 - {IIQ * 1,5} + Q3)
+        - TRATAMENTO DE MULTICOLINEARIDADE
+            - VIF (VARIANCE INFLATION FACTOR)
+        - CODIFICAÇÃO
+            - BINARIZAÇÃO/LABEL_ENCODER/ORDINAL_ENCODER (VARIÁVEIS INDEPENDENTES, ORDINAIS)
+            - ONE_HOT_ENCODER (VARIÁVEIS INDEPENDENTES, NÃO ORDINAIS)
+            - COUNT/FREQUENCY_ENCODER (PARA GRANDE QUANTIDADE DE CATEGORIAS)
+        - BALANCEAMENTO
+            - UNDERSUPPLYING
+            - OVERSAMPLING
+        - ESCALONAMENTO
+            - NORMALIZAÇÃO
+            - PADRONIZAÇÃO
+        - DISTRIBUIÇÃO (0=bom <0.5>=assimetria <1>=muita assimetria)
+            - LOG/EXPONENCIAL
+        - REDUÇÃO/AUMENTO DE DIMENSIONALIDADE (PCA, DATASET AUGMENTATION)
+        
+
+
+-----------------------------------------------
+- ANÁLISE DESCRITIVA (ESTATÍSTICA)
+-----------------------------------------------
+    - ESTATÍSTICA INFERENCIAL
+        - POPULACIONAL
+        - AMOSTRAL
+            - ALEATÓRIOS (SIMPLES, SISTEMÁTICA, ESTRATIFICADA, AGLOMERADOS, MULTI-ETAPAS, MULTIFÁSICA)
+            - NÃO ALEATÓRIOS (INTENCIONAL, SNOWBALL, QUOTAS, CONVENIÊNCIA)
+        - INTERPRETABILIDADE DOS DADOS
+    - ESTATÍSTICA DESCRITIVA
+        - MEDIDAS
+            - CENTRALIDADE (MÉDIA, MODA, MEDIANA)
+            - DISTRIBUIÇÃO (MIN, SEPARATRIZES, MAX, ASSIMETRIA, CURTOSE)
+            - DISPERSÃO (AMPLITUDE, DESVIO-ABSOLUTO/MÉDIO, VARIÂNCIA, COVARIÂNCIA, DESVIO PADRÃO, COEFICIENTE DE VARIAÇÃO)
+            - FREQUÊNCIA (ABSOLUTA, RELATIVA, ACUMULADA)
+        - PADRÕES DOS DADOS
+            - RELACIONAMENTOS (CORRELAÇÃO, ASSOCIAÇÃO)
+            - TENDÊNCIAS (ALTA, BAIXA, ESTAGNADO, SEM TENDÊNCIA, VELOCIDADE, ACELERAÇÃO)
+            - SAZONALIDADE (POR HORA, DIA DA SEMANA, DIA DO MÊS, SEMANA DO MÊS, POR MÊS DO ANO, ETC)
+            - RUIDO
+    - ESTATÍSTICA PROBABILÍSTICA
+        - DISTRIBUIÇÕES
+            - DISCRETAS (BINOMIAL, POISSON, BERNOULLI, GEOMÉTRICA, HIPERGEOMÉTRICA)
+            - CONTÍNUAS (NORMAL, UNIFORME, EXPONENCIAL, GAMA, T-STUDENT)
+    - REGRESSÃO
+        - SUPOSIÇÕES
+            - LINEARIDADE - A relação entre a variável dependente e as variáveis independentes é linear. (statsmodels.linear_rainbow(modelo))
+            - INDEPENDÊNCIA DOS ERROS - Os erros (resíduos) são independentes entre si e não estão correlacionados com as variáveis independentes. (statsmodels.stats.stattools.durbin_watson(modelo.resid))
+            - HOMOCEDASTICIDADE - A variância  dos  erros  é  constante  em  todas  as  variáveis independentes. (statsmodels.het_goldfeldquandt(y_train, x_train))
+            - NORMALIZAÇÃO DOS ERROS - Os erros são normalmente distribuídos. (scypy.stats.shapiro(modelo.resid).pvalue)
+            - SEM MULTICOLINEARIDADE - As  variáveis  independentes  não  são  altamente correlacionadas umas com as outras. ([variance_inflation_factor(train.value, i) for i in range(len(train.columns))] > 10 ou 5)
+        - SUMARIO STATSMODELS
+            - ESTATÍSTICA DO MODELO
+                - DF RESIDUALS - GRAUS DE LIBERDADE DOS RESÍDUOS 
+                - R2 - Mede o percentual da variância da variável dependente explicada pelo modelo
+                - R2 AJUSTADO - Versão ajustada do R² que penaliza o excesso de variáveis explicativas irrelevantes
+                - F STATISTIC - Estatística F do teste de significância global do modelo. Mede se pelo menos uma variável independente tem impacto significativo.
+                - PROB (F STATISTIC) - p-valor associado à estatística F. Se for pequeno (< 0.05), o modelo é estatisticamente significativo.
+                - LOG_LIKELIHOOD - Log-verossimilhança do modelo (usado para comparação de modelos).
+                - AIC - Critério de Akaike, mede a qualidade do ajuste penalizando o número de variáveis. Quanto menor, melhor.
+                - BIC - Similar ao AIC, mas penaliza mais modelos com muitas variáveis. Quanto menor, melhor.
+            - TABELA DE COEFICIENTES
+                - COEF - Representa o impacto da variável independente na variável dependente. Se positivo, indica um efeito positivo, e se negativo, um efeito negativo.
+                - STD ERR - Mede a precisão da estimativa do coeficiente. Quanto menor, mais precisa a estimativa.
+                - T - Mede se o coeficiente é significativamente diferente de zero.
+                - P>|T| - p-valor associado à estatística T. Se for pequeno (< 0.05), o modelo é estatisticamente significativo.
+                - [0.025, 0.975] - Intervalo de confiança para o coeficiente estimado. Se não incluir zero, a variável é significativa.
+                - VIF - ÍNDICE DE MULTICOLINEARIDADE DE CADA VARIÁVEL (NÃO CORRELACIONADO<5CORRELAÇÃO MÉDIA<=10>CORRELAÇÃO FORTE)
+            - DIAGNÓSTICO DOS RESÍDUOS
+                - OMNIBUS - Teste de normalidade dos resíduos. Valores altos indicam desvio da normalidade.
+                - PROB(OMNIBUS) - p-valor do teste Omnibus. Se for pequeno (< 0.05), os resíduos não seguem uma distribuição normal.
+                - SKEWNESS - Mede a simetria dos resíduos. Um valor próximo de 0 indica resíduos simétricos.
+                - KURTOSE - Mede a cauda da distribuição dos resíduos. Se próximo de 3, indica distribuição normal.
+                - DURBIN-WATSON - Testa autocorrelação dos resíduos. Valores próximos de 2 indicam ausência de correlação. Valores próximos de 0 ou 4 sugerem autocorrelação.
+                - JARQUE-BERA(JB) - Teste de normalidade baseado em skewness e kurtosis. 
+                - PROB(JB) - p-valor do teste JB. Se for pequeno (< 0.05), os resíduos não são normais.
+                - CAND. NO. - Mede multicolinearidade. Valores altos (> 30) indicam possível multicolinearidade.
+    - TESTES DE HIPÓTESES
+        - TIPOS
+            - UNICALDAL
+            - BICALDAL
+            - UNIMODAL
+            - BIMODAL
+        - PARÂMETROS
+            - NÍVEL DE CONFIANÇA
+            - NÍVEL DE SIGNIFICÂNCIA
+        
+
+
+-----------------------------------------------
+- ANÁLISE DIAGNÓSTICA (INVESTIGAÇÃO)
+-----------------------------------------------
+
+
+
+-----------------------------------------------
+- ANÁLISE PREDITIVA (PREVISÃO)
+-----------------------------------------------
+    - TREINAMENTO/VALIDAÇÃO DO ALGORÍTIMO
+        - MÉTODOS DE TREINAMENTO
+            - SIMPLES
+            - CRUZADO
+        - PARÂMETROS DE VALIDAÇÃO
+            - BENCHMARK (BASELINE, META)
+            - ALGORÍTIMOS DE CLASSIFICAÇÃO
+                - MATRIZ DE CONFUSÃO
+                - ACCURACY (Mede a precisão geral de acertos do modelo)
+                - PRECISION (Mede a precisão específica de acertos dos verdadeiros positivos com os falsos positivos da matriz de confusão)
+                - RECALL (Mede a precisão específica de acertos dos verdadeiros positivos com os falsos positivos)
+                - F1 SCORE (Combina precisão e recall em uma única métrica)
+                - AUC RUC
+            - ALGORÍTIMOS DE REGRESSÃO
+                - MEAN ABSOLUTE ERROR
+                - MEAN QUADRATIC ERROR
+                - MEAN SQUARED ERROR
+                - R2 SCORE
+                - EXPLAINED VARIANCE SCORE
+                - RESÍDUO (DEVEM SEGUIR DISTRIBUIÇÃO NORMAL)
+                    - Y_TEST - Y_PRED
+            - ALGORÍTIMOS PARA SERIES TEMPORAIS
+                -
+            - ALGORÍTIMOS DE CLUSTERIZAÇÃO
+                -
+            - ALGORÍTIMOS PARA DETECÇÕES DE PADRÕES
+                - 
+            - ALGORÍTIMOS PARA DETECÇÃO DE ANOMALIAS
+                -
+    
+
+
+-----------------------------------------------
+- ANÁLISE PRESCRITIVA (RECOMENDAÇÃO)
+-----------------------------------------------
+
+
+
+-----------------------------------------------
+- CONCLUSÕES, RELATÓRIOS E DATA VIEWS (STORY TALLING)
+-----------------------------------------------
+    - PREMISSAS (INFORMAÇÕES RELEVANTES, SIMPLES, LIMPAS, CLARAS, ADEQUADAS, ORGANIZADAS, PADRONIZADAS, OBJETIVAS, COMPARÁVEIS E ENFÁTICAS QUANDO NECESSÁRIO)
+    - STORY TELLING POR VIEW (DESCRIÇÃO DO PLANO, ANALISE DESCRITIVA***, ANALISE DIAGNÓSTICA, ANALISE PREDITIVA, ANALISE PRESCRITIVA***)
+    - VISUALIZAÇÕES (GERAIS, TÉCNICAS)
+        - DIAGRAMAS
+        - LINEPLOT
+        - BARPLOT
+        - BUBLLEPLOT
+        - PIEPLOT
+        - HISTPLOT
+        - BOXPLOT/VIOLINEPLOT
+        - SCATTERPLOT/REGPLOT/LMPLOT/SWARMPLOT
+        - HEATMAP
+        - GEOMAP
+    - BENCHMARKS
+    - RELATÓRIOS
+
+
+
+
+-----------------------------------------------
+- DEPLOY
+-----------------------------------------------
+

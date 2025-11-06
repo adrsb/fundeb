@@ -1,0 +1,25 @@
+# Configurações de extração para diferentes conjuntos de dados  
+conta_corrente:
+  # A chave 'csv' será usada para encontrar o extrator no REGISTRY
+  csv: 
+    params:
+      sep: ";"
+      encoding: "latin1"
+      thousands: "."
+      decimal: ","
+  
+  # A chave 'pdf' também será usada para o REGISTRY
+  pdf:
+    params:
+      flavor: "lattice"
+      pages: "1-3"
+
+conta_investimentos:
+  pdf:
+    params: { ... }
+
+remessas_bancarias:
+  csv: # Mesmo que o arquivo seja .txt, o "tipo" de extração é 'csv'
+    params:
+      sep: "\t"
+      encoding: "utf-8"
