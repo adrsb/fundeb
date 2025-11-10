@@ -18,7 +18,7 @@ class CSVExtractor(BaseExtractor):
         config_params: dict[str, Any],
     ):
         super().__init__()
-        self.logger.debug("inicializando CSVExtractor...")
+        self.logger.debug("Inicializando CSVExtractor...")
         self.read_kwargs = config_params
         self.logger.debug(f"CSVExtractor inicializado com params: {self.read_kwargs}]")
 
@@ -75,14 +75,10 @@ if __name__ == "__main__":
     config_params = config["conta_corrente"]["csv"]["params"]
     logger.debug(f"Parâmetros carregados: {config_params}")
 
-    logger.debug("Inicializando CSVExtractor...")
     extractor = CSVExtractor(config_params=config_params)
 
-    logger.debug("Inicializando Extração...")
     test_file = (
         r"C:\Users\adrsb\OneDrive\Documentos\Projects\FundebProject\data\raw"
         r"\external\bb\conta_corrente\csv\EXTRATO_BANCARIO_CC_AP_MACAPA_2025_01.csv"
     )
     df = extractor.extract(test_file)
-
-    logger.info(f"DataFrame extraído:\n{df.head()}")

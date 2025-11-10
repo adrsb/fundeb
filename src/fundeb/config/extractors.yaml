@@ -7,6 +7,16 @@ conta_corrente:
       encoding: "latin1"
       thousands: "."
       decimal: ","
+      dtype:
+        BANCO: str
+        AGENCIA: str
+        CONTA: str
+      dayfirst: true
+      parse_dates:
+        - DT_ABERTURA
+        - DATA_INICIO
+        - DATA_FIM
+        - DT_LANCAMENTO
   
   # A chave 'pdf' também será usada para o REGISTRY
   pdf:
