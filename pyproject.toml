@@ -35,16 +35,16 @@ authors = [
 # O UV irá instalar estas ao executar `uv pip install .`
 dependencies = [
     "camelot-py>=1.0.9",
-    # Ex: "fastapi>=0.100.0",
-    # Ex: "requests<3.0",
     "dotenv>=0.9.9",
+    "great-expectations>=1.9.0",
+    "ipykernel>=7.1.0",
     "pandas>=2.3.3",
     "pyyaml>=6.0.3",
 ]
 
 [project.urls]
 # Links úteis (opcional, mas recomendado)
-Homepage = "https://github.com/adrsb/fundeb.git"
+# Homepage = "https://github.com/adrsb/fundeb.git"
 Repository = "https://github.com/adrsb/fundeb.git"
 
 [project.optional-dependencies]
@@ -86,7 +86,7 @@ docs = [
 # Configuração do Ruff (Linter e Formatador)
 # O UV pode executar o ruff diretamente: `uv ruff check .` e `uv ruff format .`
 line-length = 88
-target-version = "py310" # Combine com seu `requires-python`
+target-version = "py313" # Combine com seu `requires-python`
 
 [tool.ruff.lint]
 # Seleciona as regras de lint. "E", "F", "W" são padrões (flake8).
@@ -110,6 +110,6 @@ testpaths = [
 
 [tool.mypy]
 # Configuração do MyPy (checagem de tipos)
-python_version = "3.14" # Combine com seu `requires-python`
+python_version = "3.13" # Combine com seu `requires-python`
 warn_return_any = true
 ignore_missing_imports = true
