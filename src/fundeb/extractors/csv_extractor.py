@@ -38,7 +38,7 @@ class CSVExtractor(BaseExtractor):
         except Exception as e:
             msg = f"Erro ao extrair CSV {file_path}: {e}"
             self.logger.error(msg)
-            raise ValueError(msg) from e
+            raise
 
     def validate_schema(self, df: pd.DataFrame) -> bool:
         """
