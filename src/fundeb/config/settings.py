@@ -30,11 +30,14 @@ DATA_GOLD_DIR = DATA_LAKE_DIR / "gold"
 # Caminho para o projeto dbt que fará as transformações
 DBT_PROJECT_DIR = PROJECT_ROOT / "dbt_transform"
 
+# Caminho para o projeto dbt que fará as transformações
+LOGS_PROJECT_DIR = PROJECT_ROOT / "data" / "logs"
+
 # Caminho para o ficheiro YAML que define OS PARÂMETROS dos extratores
 # A factory.py irá importar esta variável para saber qual ficheiro ler.
-EXTRACTORS_CONFIG_PATH = (
-    PROJECT_ROOT / "src" / "fundeb_analysis" / "config" / "extractors.yaml"
-)
+EXTRACTORS_CONFIG_PATH = PROJECT_ROOT / "src" / "fundeb" / "config" / "extractors.yaml"
+# Caminho para o ficheiro YAML que define OS PARÂMETROS dos loggers
+LOGGING_CONFIG_PATH = PROJECT_ROOT / "src" / "fundeb" / "config" / "logging.yaml"
 
 
 # --- 4. Configurações do Data Warehouse (DuckDB) ---
@@ -70,8 +73,14 @@ FILE_EXTENSION_MAP = {
 # Garante que os diretórios de dados existam quando este módulo for importado
 def _create_data_dirs():
     """Cria os diretórios da arquitetura Medallion se não existirem."""
-    print("Verificando estrutura de diretórios do Data Lake...")
-    for path in [DATA_RAW_DIR, DATA_BRONZE_DIR, DATA_SILVER_DIR, DATA_GOLD_DIR]:
+    print("Verificando estrutura de diretórios...")
+    for path in [
+        DATA_RAW_DIR,
+        DATA_BRONZE_DIR,
+        DATA_SILVER_DIR,
+        DATA_GOLD_DIR,
+        LOGS_PROJECT_DIR,
+    ]:
         path.mkdir(parents=True, exist_ok=True)
 
 

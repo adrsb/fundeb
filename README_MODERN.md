@@ -1,10 +1,10 @@
-# CACS FUNDEB Analysis
+# FundebProject
 
 ![FUNDEB Logo](https://www.gov.br/fnde/pt-br/acesso-a-informacao/acoes-e-programas/financiamento/fundeb/fundeb-home/@@collective.cover.banner/e0c58aa7-955e-4d4b-a99a-a6bfaaf50a18/@@images/81160181-a1d1-4a84-a467-2061f366a939.jpeg)
 
 ## 📋 Sobre o Projeto
 
-O **CACS FUNDEB Analysis** é um projeto de ciência de dados moderno voltado para análise dos dados históricos de repasses de recursos financeiros do FUNDEB (Fundo de Manutenção e Desenvolvimento da Educação Básica e de Valorização dos Profissionais da Educação).
+O **FundebProject** é um projeto end-to-end de engenharia, ciência e análise de dados do Fundeb. Aqui você vera desde o processo de extração, transformação e carga dos dados (ETL),
 
 ### 🎯 Objetivos
 

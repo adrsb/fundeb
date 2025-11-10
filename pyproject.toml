@@ -1,0 +1,115 @@
+# pyproject.toml
+
+[build-system]
+# Define o backend de build (PEP 517). Essencial para que o pacote possa ser construído.
+# O setuptools é o mais comum e robusto.
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Metadados principais do projeto (PEP 621).
+# O UV lê esta seção para `uv pip install .` e `uv pip compile`.
+name = "fundeb"
+version = "0.1.0"
+description = "Projeto de end-to-end de engenharia, ciência e análise de dados do Fundeb."
+readme = "README.md" # Aponta para o seu arquivo README
+requires-python = ">=3.13" # Defina a versão mínima do Python
+license = { file = "LICENSE.txt" } # Ou { text = "Apache-2.0" }
+authors = [
+    { name = "Ádrian S. Barbosa", email = "adrina.sbar07@gmail.com" },
+]
+# keywords = ["tag1", "tag2", "python"] # Palavras-chave para descoberta no PyPI
+
+# # Classificadores ajudam a categorizar seu projeto no PyPI
+# classifiers = [
+#     "Development Status :: 3 - Alpha",
+#     "Intended Audience :: Developers",
+#     "License :: OSI Approved :: MIT License",
+#     "Programming Language :: Python :: 3",
+#     "Programming Language :: Python :: 3.10",
+#     "Programming Language :: Python :: 3.11",
+#     "Programming Language :: Python :: 3.12",
+# ]
+
+# Dependências principais do seu projeto
+# O UV irá instalar estas ao executar `uv pip install .`
+dependencies = [
+    "camelot-py>=1.0.9",
+    # Ex: "fastapi>=0.100.0",
+    # Ex: "requests<3.0",
+    "dotenv>=0.9.9",
+    "pandas>=2.3.3",
+    "pyyaml>=6.0.3",
+]
+
+[project.urls]
+# Links úteis (opcional, mas recomendado)
+Homepage = "https://github.com/adrsb/fundeb.git"
+Repository = "https://github.com/adrsb/fundeb.git"
+
+[project.optional-dependencies]
+# Dependências opcionais, usadas para desenvolvimento, testes, etc.
+# Instale com `uv pip install .[dev]` ou `uv pip install .[test,docs]`
+
+dev = [
+    "ruff>=0.4.0",      # Linter e formatador "tudo-em-um"
+    "pytest>=8.0.0",    # Framework de testes
+    "pytest-cov",       # Para relatório de cobertura de testes
+    "mypy>=1.0.0",      # Checagem estática de tipos
+]
+
+test = [
+    "pytest>=8.0.0",
+    "pytest-cov",
+]
+
+docs = [
+    # Ex: "mkdocs-material",
+]
+
+# --- Configuração de Ferramentas ---
+
+[tool.uv]
+# Esta seção é OPCIONAL.
+# Você pode usá-la para configurar o comportamento do UV,
+# como apontar para um índice de pacotes privado (ex: Artifactory).
+#
+# Exemplo de índice privado:
+# index-url = "https://meu-registry-privado.com/simple"
+#
+# Exemplo de múltiplas fontes:
+# [tool.uv.sources]
+# pypi = { index = "https://pypi.org/simple/" }
+# private = { index = "https://meu-registry-privado.com/simple/" }
+
+[tool.ruff]
+# Configuração do Ruff (Linter e Formatador)
+# O UV pode executar o ruff diretamente: `uv ruff check .` e `uv ruff format .`
+line-length = 88
+target-version = "py310" # Combine com seu `requires-python`
+
+[tool.ruff.lint]
+# Seleciona as regras de lint. "E", "F", "W" são padrões (flake8).
+# "I" é para isort (ordenação de imports).
+# "UP" é para pyupgrade (modernização de sintaxe).
+select = ["E", "F", "W", "I", "UP", "B", "C90"]
+ignore = []
+
+[tool.ruff.format]
+# Configuração do formatador (similar ao Black)
+quote-style = "double"
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+# Configuração do Pytest
+minversion = "6.0"
+addopts = "-ra -q --cov=src --cov-report=term-missing" # Ajuste `--cov=src` para seu diretório
+testpaths = [
+    "tests",
+]
+
+[tool.mypy]
+# Configuração do MyPy (checagem de tipos)
+python_version = "3.14" # Combine com seu `requires-python`
+warn_return_any = true
+ignore_missing_imports = true

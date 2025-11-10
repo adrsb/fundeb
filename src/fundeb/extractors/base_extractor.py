@@ -2,21 +2,28 @@
 Interface base para extractors (Strategy Pattern)
 """
 
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
-import logging
 from pathlib import Path
 
 import pandas as pd
+import yaml
+
+from fundeb.config.settings import LOGGING_CONFIG_PATH
+
+with open(LOGGING_CONFIG_PATH, encoding="utf-8") as file:
+    logging_config = yaml.safe_load(file)
+logging.config.dictConfig(logging_config)
 
 
 class BaseExtractor(ABC):
-    """Interface base para extractors"""
+    """Interface base para os extractors"""
 
     # Lógica de inicialização compartilhada (logger)
     def __init__(self):
-        self.logger = logging.getLogger("extractor")
-        self.logger.info("Extrator para criado.")
+        self.logger = logging.getLogger("my_module")
+        self.logger.debug("Extrator para criado.")
 
     # Validação de entrada do arquivo
     def validate_file(self, file_path: str | Path) -> None:
@@ -25,25 +32,33 @@ class BaseExtractor(ABC):
         Args:
             file_path: Caminho completo do arquivo a ser validado
         Raises:
+            TypeError: Path deve ser str ou Path
+            TypeError: Path não é um arquivo
             FileNotFoundError: Arquivo não encontrado
-            ValueError: Path não é um arquivo
             ValueError: Arquivo vazio
         """
-        if isinstance(file_path, str):
-            file_path = Path(file_path)
+        self.logger.debug(f"Iniciando validação do Arquivo: {file_path}")
 
-        logging.info(f"Iniciando validação do Arquivo: {file_path}")
+        file_path = Path(file_path)
 
-        if not file_path.exists():
-            raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
-
+        if isinstance(file_path, (str, Path)) is False:
+            msg = f"O file_path deve ser str ou Path, não {type(file_path)}"
+            self.logger.error(msg)
+            raise TypeError(msg)
         if not file_path.is_file():
-            raise ValueError(f"Path não é um arquivo: {file_path}")
-
+            msg = f"Path não é um arquivo: {file_path}"
+            self.logger.error(msg)
+            raise TypeError(msg)
+        if not file_path.exists():
+            msg = f"Arquivo não encontrado: {file_path}"
+            self.logger.error(msg)
+            raise FileNotFoundError(msg)
         if file_path.stat().st_size == 0:
-            raise ValueError(f"Arquivo vazio: {file_path}")
+            msg = f"Arquivo vazio: {file_path}"
+            self.logger.error(msg)
+            raise ValueError(msg)
 
-        logging.info("Arquivo Validado.")
+        self.logger.info("Arquivo Validado com sucesso.")
 
     # Extração dos dados do arquivo
     @abstractmethod
@@ -57,61 +72,74 @@ class BaseExtractor(ABC):
         """
         pass
 
-    # Validação dos dados extraídos
-    def validate_data(self, df: pd.DataFrame) -> pd.DataFrame:
+    @abstractmethod
+    def validate_schema(self, df: pd.DataFrame) -> bool:
         """
-        Valida os dados extraídos
+        Valida se o DataFrame está com o schema esperado
         Args:
-            df (pd.DataFrame): DataFrame com os dados extraídos
-        Raises:
-            ValueError: Dados extraídos estão vazios
+            df (pd.DataFrame): DataFrame a ser validado
         Returns:
-            pd.DataFrame: DataFrame validado
+            bool: True se o schema estiver correto, False caso contrário
+        Raises:
+            ValueError: Se o schema não estiver conforme esperado
         """
-
-        logging.info("Iniciando validação dos dados extraídos")
-
-        if df.empty:
-            raise ValueError("Dados extraídos estão vazios")
-
-        logging.info("Dados extraídos validados com sucesso.")
-        return df
+        pass
 
     # Adição de metadados
-    def add_metadata(self, df: pd.DataFrame) -> pd.DataFrame:
+    def add_metadata(self, file_path: str | Path, df: pd.DataFrame) -> pd.DataFrame:
         """
         Adiciona colunas de metadados ao Dataframe
         Args:
+            file_path (str | Path):
+                Caminho completo do arquivo para extração de metadados
             df (pd.DataFrame): DataFrame bruto extraído
         Returns:
             pd.DataFrame: Dataframe extraído com metadados
         """
-        logging.info("Iniciando adição de metadados")
+        logging.debug("Iniciando extração de metadados")
 
-        stat = self.file_path.stat()
+        stat = file_path.stat()
 
-        # df["file_path"] = str(self.file_path)
-        df["file_name"] = self.file_path.name
-        # df["file_extension"] = self.file_path.suffix
+        logging.debug("Iniciando adição de metadados")
+        # df["file_path"] = str(file_path)
+        df["file_name"] = file_path.name
+        # df["file_extension"] = file_path.suffix
         df["file_mb_size"] = round(stat.st_size / (1024 * 1024), 3)
-        df["modified_time"] = datetime.fromtimestamp(stat.st_mtime)
+        df["last_modified_time"] = datetime.fromtimestamp(stat.st_mtime)
         df["processing_time"] = datetime.now()
 
         logging.info("Metadados adicionados com sucesso.")
         return df
 
     # Salvar em arquivo Parquet
-    def save(self, df: pd.DataFrame, destiny_dir: str | Path) -> None:
+    def save(
+        self, df: pd.DataFrame, file_path: str | Path, destiny_dir: str | Path
+    ) -> None:
         """
         Armazena dados extraídos e validados com seus metadados em arquivo parquet
         Args:
+            file_path (str | Path): Caminho completo do arquivo de origem
             df (pd.DataFrame): Dataframe extraído com metadados
             destiny_dir (str | Path): Caminho do diretório de destino
         """
-        if not isinstance(destiny_dir, Path):
-            destiny_dir = Path(destiny_dir)
+        destiny_dir = Path(destiny_dir)
         destiny_dir.mkdir(parents=True, exist_ok=True)
-        df.to_parquet(destiny_dir / f"{self.file_path.stem}.parquet")
+        df.to_parquet(destiny_dir / f"{file_path.stem}.parquet")
+
+    # Execução do mini fluxo completo
+    def run_flow(self, file_path: str | Path) -> pd.DataFrame:
+        """
+        Extrai, adiciona metadados, valida o schema e retorna o DataFrame
+        Args:
+            file_path: Caminho do arquivo a ser processado
+        Returns:
+            pd.DataFrame: DataFrame processado e validado com metadados
+        """
+        self.validate_file(file_path)
+        df = self.extract(file_path)
+        self.validate_schema(df)
+        df = self.add_metadata(file_path, df)
+        return df
 
 
 if __name__ == "__main__":

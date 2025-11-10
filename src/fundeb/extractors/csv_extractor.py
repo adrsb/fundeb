@@ -4,11 +4,11 @@ Extrator para arquivos CSV de conta corrente
 
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 
-from fundeb_analysis.extractors.base_extractor import BaseExtractor
+from fundeb.extractors.base_extractor import BaseExtractor
 
 
 class CSVExtractor(BaseExtractor):
@@ -16,7 +16,7 @@ class CSVExtractor(BaseExtractor):
 
     def __init__(
         self,
-        config_params: Dict[str, Any],
+        config_params: dict[str, Any],
     ):
         super().__init__()
         self.read_kwargs = config_params
@@ -41,9 +41,9 @@ class CSVExtractor(BaseExtractor):
 
 # --- O BLOCO DE TESTE (SMOKE TEST) ---
 if __name__ == "__main__":
+    import sys
     import tempfile
     from pathlib import Path
-    import sys
 
     print("\n--- EXECUTANDO SMOKE TEST: CSVExtractor ---")
 
