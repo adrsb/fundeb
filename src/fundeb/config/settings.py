@@ -3,7 +3,11 @@ Arquivo de configuração utilizando Pydantic Settings para gerenciar
 as variáveis de ambiente do projeto.
 """  # config/settings.py
 
+import logging
+import logging.config
+import yaml
 from pathlib import Path
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
@@ -33,6 +37,9 @@ class Settings(BaseSettings):
     extractors_config_path: Path = (
         project_root / "src" / "fundeb" / "config" / "extractor_configs.yaml"
     )
+    logging_config_path: Path = (
+        project_root / "src" / "fundeb" / "config" / "log_config.yaml"
+    )
 
     # --- Configurações do Pipeline (Com Defaults) ---
     retry_attempts: int = Field(
@@ -60,27 +67,39 @@ class Settings(BaseSettings):
 
 
 # --- Implementação Singleton ---
-# O lru_cache garante que a classe Settings seja instanciada apenas uma vez.
+# O lru_cache (de functools) garante que a classe Settings seja instanciada apenas uma vez.
 # As chamadas subsequentes retornam o objeto em cache.
 @lru_cache()
 def get_settings() -> Settings:
     return Settings()  # type: ignore
 
 
+settings = get_settings()
+
+
+@lru_cache()
+def get_logger(name: str = "fundeb_logger") -> logging.Logger:
+    with open(settings.logging_config_path, encoding="utf-8") as file:
+        logging_config = yaml.safe_load(file)
+    logging.config.dictConfig(logging_config)
+    return logging.getLogger(name)
+
+
+logger = get_logger()
+
 if __name__ == "__main__":
     # Testa a configuração carregada
-    print("Carregando Configurações...")
-    settings = get_settings()
-    print("Carregando Configurações... Concluído.")
+    logger.debug("Carregando Configurações...")
+    logger.debug("Carregando Configurações... Concluído.")
     print("#", 88 * "-")
-    print(f"App Name: {settings.app_name}")
-    print(f"Environment: {settings.app_env}")
-    print(f"DB Connection: {settings.db_connection_string}")
-    print(f"Google ai api key: {settings.google_ai_api_key}")
-    print(f"Root path: {settings.project_root}")
-    print(f"Data path: {settings.data_dir}")
-    print(f"Raw path: {settings.raw_dir}")
-    print(f"Bronze path: {settings.bronze_dir}")
-    print(f"Silver path: {settings.silver_dir}")
-    print(f"Gold path: {settings.gold_dir}")
-    print(f"logs path: {settings.logs_dir}")
+    logger.info(f"App Name: {settings.app_name}")
+    logger.info(f"Environment: {settings.app_env}")
+    logger.info(f"DB Connection: {settings.db_connection_string}")
+    logger.info(f"Google ai api key: {settings.google_ai_api_key}")
+    logger.info(f"Root path: {settings.project_root}")
+    logger.info(f"Data path: {settings.data_dir}")
+    logger.info(f"Raw path: {settings.raw_dir}")
+    logger.info(f"Bronze path: {settings.bronze_dir}")
+    logger.info(f"Silver path: {settings.silver_dir}")
+    logger.info(f"Gold path: {settings.gold_dir}")
+    logger.info(f"logs path: {settings.logs_dir}")
