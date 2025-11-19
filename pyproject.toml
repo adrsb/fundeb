@@ -21,9 +21,7 @@ dependencies = []
 Repository = "https://github.com/adrsb/fundeb.git"
 
 # [project.scripts]
-# Se o seu projeto tiver scripts executáveis, defina-os aqui. Exemplo:
 # meu-script = "fundeb.main:main"
-
 
 [build-system]
 requires = ["setuptools>=61.0"] # uv usa setuptools para construção por padrão
