@@ -48,6 +48,16 @@ class Settings(BaseSettings):
         extra="ignore",  # Ignora variáveis extras no .env que não estão aqui
     )
 
+    def model_post_init(self, __context):
+        # Cria os diretórios se eles não existirem
+        # parents=True: cria pastas pai se necessário (ex: cria 'data' antes de 'output')
+        # exist_ok=True: não dá erro se a pasta já existir
+        self.raw_dir.mkdir(parents=True, exist_ok=True)
+        self.bronze_dir.mkdir(parents=True, exist_ok=True)
+        self.silver_dir.mkdir(parents=True, exist_ok=True)
+        self.gold_dir.mkdir(parents=True, exist_ok=True)
+        self.logs_dir.mkdir(parents=True, exist_ok=True)
+
 
 # --- Implementação Singleton ---
 # O lru_cache garante que a classe Settings seja instanciada apenas uma vez.
@@ -67,11 +77,8 @@ if __name__ == "__main__":
     print(f"Environment: {settings.app_env}")
     print(f"DB Connection: {settings.db_connection_string}")
     print(f"Google ai api key: {settings.google_ai_api_key}")
-    print("#", 88 * "-")
     print(f"Root path: {settings.project_root}")
-    print("#", 88 * "-")
     print(f"Data path: {settings.data_dir}")
-    print("#", 88 * "-")
     print(f"Raw path: {settings.raw_dir}")
     print(f"Bronze path: {settings.bronze_dir}")
     print(f"Silver path: {settings.silver_dir}")
