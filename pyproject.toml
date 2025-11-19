@@ -1,7 +1,10 @@
 [project]
 name = "fundeb"
 version = "0.1.0"
-description = "Add your description here"
+description = """Trata-se de um projeto end-to-end de engenharia, ciência e análise de 
+dados do Fundeb. Aqui você encontrará desde a extração e transformação dos dados 
+brutos até a análise e visualização dos mesmos com geração automática de relatórios,
+apresentações e dashboards."""
 authors = [
     { name = "adrsb", email = "adrian.sbar07@gmail.com" },
 ]
