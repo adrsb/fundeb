@@ -65,6 +65,16 @@ class Settings(BaseSettings):
         self.gold_dir.mkdir(parents=True, exist_ok=True)
         self.logs_dir.mkdir(parents=True, exist_ok=True)
 
+    # O lru_cache (de functools) garante que a classe Settings seja instanciada apenas uma vez.
+    # As chamadas subsequentes retornam o objeto em cache.
+    @staticmethod
+    @lru_cache()
+    def get_logger(name: str = "fundeb_logger") -> logging.Logger:
+        with open(settings.logging_config_path, encoding="utf-8") as file:
+            logging_config = yaml.safe_load(file)
+        logging.config.dictConfig(logging_config)
+        return logging.getLogger(name)
+
 
 # --- Implementação Singleton ---
 # O lru_cache (de functools) garante que a classe Settings seja instanciada apenas uma vez.
@@ -76,16 +86,7 @@ def get_settings() -> Settings:
 
 settings = get_settings()
 
-
-@lru_cache()
-def get_logger(name: str = "fundeb_logger") -> logging.Logger:
-    with open(settings.logging_config_path, encoding="utf-8") as file:
-        logging_config = yaml.safe_load(file)
-    logging.config.dictConfig(logging_config)
-    return logging.getLogger(name)
-
-
-logger = get_logger()
+logger = settings.get_logger()
 
 if __name__ == "__main__":
     # Testa a configuração carregada
