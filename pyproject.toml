@@ -2,6 +2,26 @@
 name = "fundeb"
 version = "0.1.0"
 description = "Add your description here"
+authors = [
+    { name = "adrsb", email = "adrian.sbar07@gmail.com" },
+]
+license = { file = "LICENSE.txt" }
 readme = "README.md"
 requires-python = ">=3.13"
+keywords = ["fundeb"]
 dependencies = []
+
+
+[project.urls]
+# Homepage = "https://github.com/seu-usuario/seu-projeto"
+# Documentation = "https://seu-usuario.github.io/seu-projeto"
+Repository = "https://github.com/adrsb/fundeb.git"
+
+# [project.scripts]
+# Se o seu projeto tiver scripts executáveis, defina-os aqui. Exemplo:
+# meu-script = "fundeb.main:main"
+
+
+[build-system]
+requires = ["setuptools>=61.0"] # uv usa setuptools para construção por padrão
+build-backend = "setuptools.build_meta"
