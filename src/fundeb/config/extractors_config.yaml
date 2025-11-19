@@ -1,0 +1,41 @@
+# CONFIGURAÇÕES
+#---------------------------------------------------------------#
+# CONTA CORRETE
+#---------------------------------------------------------------#
+conta_corrente:
+  csv: 
+    params:
+      sep: ";"
+      encoding: "latin1"
+      thousands: "."
+      decimal: ","
+      dtype:
+        BANCO: str
+        AGENCIA: str
+        CONTA: str
+      parse_dates:
+        - DT_ABERTURA
+        - DATA_INICIO
+        - DATA_FIM
+        - DT_LANCAMENTO
+      dayfirst: true
+  pdf:
+    params:
+      flavor: "lattice"
+      pages: "1-3"
+
+#---------------------------------------------------------------#
+# CONTA INVESTIMENTOS
+#---------------------------------------------------------------#
+conta_investimentos:
+  pdf:
+    params: { ... }
+
+#---------------------------------------------------------------#
+# REMESSAS BANCÁRIAS
+#---------------------------------------------------------------#
+remessas_bancarias:
+  csv:
+    params:
+      sep: "\t"
+      encoding: "utf-8"
