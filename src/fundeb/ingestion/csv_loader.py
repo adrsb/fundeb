@@ -3,7 +3,6 @@ Extrator para arquivos CSV
 """
 
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 
@@ -25,8 +24,7 @@ class CsvLoader(BaseDataLoader):
         try:
             logger.debug("Iniciando extração do CSV...")
             logger.info(f"Arquivo: {file_path}")
-            params = self.params_kwargs or {}
-            df: pd.DataFrame = pd.read_csv(str(file_path), **params)
+            df: pd.DataFrame = pd.read_csv(str(file_path), **self.params_kwargs)
             logger.info(f"Dados: {len(df)} linhas, {len(df.columns)} colunas")
             logger.debug("Iniciando extração do CSV... Concluída.")
         except Exception as e:
@@ -35,17 +33,30 @@ class CsvLoader(BaseDataLoader):
             raise
         return df
 
-    def validate_schema(self, df: pd.DataFrame) -> bool:
+    def validate_schema(self, df: pd.DataFrame, module: str) -> None:
         """
         Valida se o DataFrame está com o schema esperado
         Args:
             df (pd.DataFrame): DataFrame a ser validado
+            module (str): Nome do módulo
         Returns:
             bool: True se o schema estiver correto, False caso contrário
         Raises:
             ValueError: Se o schema não estiver conforme esperado
         """
-        pass
+        logger.debug("Iniciando validação do schema...")
+        if module == "conta_corrente":
+            from fundeb.ingestion.validators.current_account_validator import (
+                CurrentAccountCsvValidatorInputSchema,
+            )
+
+            try:
+                CurrentAccountCsvValidatorInputSchema.validate(df)
+                logger.info("Schema validado com sucesso.")
+            except Exception as e:
+                msg = f"Validação falhou: {e}"
+                logger.exception(msg)
+        logger.debug("Validação do schema... Concluída.")
 
 
 # --- O BLOCO DE TESTE (SMOKE TEST) ---
@@ -63,4 +74,4 @@ if __name__ == "__main__":
         file_extension="csv",
     )
 
-    # display(df.head(3))
+    display(df)  # type: ignore # noqa: F821
