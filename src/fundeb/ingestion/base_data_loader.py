@@ -18,7 +18,7 @@ class BaseDataLoader(ABC):
     def __init__(self, extractors_config_path: Path):
         logger.debug("Inicializando Extractor...")
         self.extractors_config_path = extractors_config_path
-        self.params_kwargs: dict[str, Any] | None = None
+        self.params_kwargs: dict[str, Any] = {}
         logger.info(f"Origem dos parâmetros: {extractors_config_path}")
         logger.debug("Inicialização de Extractor... Concluída.")
 
@@ -58,7 +58,7 @@ class BaseDataLoader(ABC):
         module: str,
         file_extension: str,
         encoding: str = "utf-8",
-    ) -> None:
+    ) -> dict[str, Any]:
         logger.debug("Iniciando captura de parâmetros...")
         extractors_config_path: Path = self.extractors_config_path
         with open(extractors_config_path, encoding=encoding) as file:
@@ -67,6 +67,7 @@ class BaseDataLoader(ABC):
         logger.info(f"Parâmetros: {params}")
         self.params_kwargs = params
         logger.debug("Captura de parâmetros... Concluída.")
+        return self.params_kwargs
 
     @staticmethod
     @abstractmethod
@@ -81,10 +82,11 @@ class BaseDataLoader(ABC):
 
     @staticmethod
     @abstractmethod
-    def validate_schema(df: pd.DataFrame) -> bool:
+    def validate_schema(df: pd.DataFrame, module: str) -> None:
         """Valida se o DataFrame está com o schema esperado
         Args:
             df (pd.DataFrame): DataFrame a ser validado
+            module (str): Nome do módulo
         Returns:
             bool: True se o schema estiver correto, False caso contrário
         Raises:
@@ -106,10 +108,10 @@ class BaseDataLoader(ABC):
         logger.info(f"Metadados: {stat}...")
 
         logger.debug("Iniciando adição de metadados...")
-        df["file_name"] = file_path.name
-        df["file_size"] = round(stat.st_size / (1024 * 1024), 3)  # MB
-        df["last_modified_time"] = datetime.fromtimestamp(stat.st_mtime)
-        df["processing_time"] = datetime.now()
+        df["FILE_NAME"] = file_path.name
+        df["FILE_SIZE"] = f"{round(stat.st_size / (1024 * 1024), 3)} MB"  # MB
+        df["LAST_MODIFIED"] = datetime.fromtimestamp(stat.st_mtime)
+        df["LAST_PROCESSING"] = datetime.now()
         logger.debug("Metadados adicionados com sucesso.")
         return df
 
@@ -125,8 +127,8 @@ class BaseDataLoader(ABC):
         destiny_dir.mkdir(parents=True, exist_ok=True)
         file_name = f"{file_path.stem}.parquet"
         df.to_parquet(destiny_dir / file_name)
-        logger.debug("DataFrame salvo com sucesso!")
         logger.info(f"Diretório de Destino: {destiny_dir / file_name}")
+        logger.debug("DataFrame salvo com sucesso!")
 
     def run_flow(
         self,
@@ -147,11 +149,7 @@ class BaseDataLoader(ABC):
         file_extension = (validated_file_path.suffix).replace(".", "")
         self.get_params(module=module, file_extension=file_extension)
         df = self.load_data(validated_file_path)
-        schema_validation = self.validate_schema(df)
-        if schema_validation:
-            logger.info(f"Schema validado: {schema_validation}")
-        else:
-            logger.warning(f"Schema validado: {schema_validation}")
+        self.validate_schema(df, module=module)
         df = self.add_metadata(validated_file_path, df)
         destiny_dir = settings.bronze_dir / source / origin / module
         self.save_to_bronze(df, validated_file_path, destiny_dir=destiny_dir)
