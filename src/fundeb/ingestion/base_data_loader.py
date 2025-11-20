@@ -1,14 +1,26 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
+import yaml
 
-from fundeb.config.settings import settings, logger
+from fundeb.config.settings import settings
 
 
-class DataLoader(ABC):
+logger = settings.get_logger()
+
+
+class BaseDataLoader(ABC):
     """Classe base responsável pela carga de dados de ficheiros."""
+
+    def __init__(self, extractors_config_path: Path):
+        logger.debug("Inicializando Extractor...")
+        self.extractors_config_path = extractors_config_path
+        self.params_kwargs: dict[str, Any] | None = None
+        logger.info(f"Origem dos parâmetros: {extractors_config_path}")
+        logger.debug("Inicialização de Extractor... Concluída.")
 
     @staticmethod
     def validate_file(file_path: str | Path) -> Path:
@@ -41,14 +53,29 @@ class DataLoader(ABC):
         logger.debug("Validação do Arquivo... Concluída.")
         return validated_file_path
 
+    def get_params(
+        self,
+        module: str,
+        file_extension: str,
+        encoding: str = "utf-8",
+    ) -> None:
+        logger.debug("Iniciando captura de parâmetros...")
+        extractors_config_path: Path = self.extractors_config_path
+        with open(extractors_config_path, encoding=encoding) as file:
+            config = yaml.safe_load(file.read())
+            params = config[module][file_extension]["params"]
+        logger.info(f"Parâmetros: {params}")
+        self.params_kwargs = params
+        logger.debug("Captura de parâmetros... Concluída.")
+
     @staticmethod
     @abstractmethod
     def load_data(file_path: Path) -> pd.DataFrame:
         """Carrega dados de um arquivo.
         Args:
-            file_path (Path): Caminho completo do arquivo.
+            file_path (Path): Caminho completo do arquivo
         Returns:
-            pd.DataFrame: DataFrame dos dados brutos.
+            pd.DataFrame: DataFrame dos dados brutos
         """
         pass
 
@@ -102,7 +129,12 @@ class DataLoader(ABC):
         logger.info(f"Diretório de Destino: {destiny_dir / file_name}")
 
     def run_flow(
-        self, file_path: str | Path, source: str, origin: str, module: str
+        self,
+        file_path: str | Path,
+        source: str,
+        origin: str,
+        module: str,
+        file_extension: str,
     ) -> pd.DataFrame:
         """Executa fluxo completo como pipeline
         Args:
@@ -112,6 +144,8 @@ class DataLoader(ABC):
         """
         logger.debug("Iniciando pipeline...")
         validated_file_path = self.validate_file(file_path)
+        file_extension = (validated_file_path.suffix).replace(".", "")
+        self.get_params(module=module, file_extension=file_extension)
         df = self.load_data(validated_file_path)
         schema_validation = self.validate_schema(df)
         if schema_validation:
