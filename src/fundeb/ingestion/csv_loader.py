@@ -1,40 +1,36 @@
 """
-Extrator para arquivos CSV de conta corrente
+Extrator para arquivos CSV
 """
 
+from pathlib import Path
 from typing import Any
 
-import great_expectations as gx
 import pandas as pd
 
-from fundeb.ingestion.loader import DataLoader
-from fundeb.config.settings import settings, logger
+from fundeb.ingestion.base_data_loader import BaseDataLoader
+from fundeb.config.settings import settings
 
 
-class CSVExtractor(DataLoader):
-    """Extrator para arquivos CSV de conta corrente"""
+logger = settings.get_logger()
 
-    def __init__(
-        self,
-        config_params: dict[str, Any],
-    ):
-        super().__init__()
-        self.logger.debug("Inicializando CSVExtractor...")
-        self.read_kwargs = config_params
-        self.logger.info(f"Parâmetros: {self.read_kwargs}")
-        self.logger.debug("Inicialização de CSVExtractor... Concluída.")
 
-    def extract(self, file_path) -> pd.DataFrame:
+class CsvLoader(BaseDataLoader):
+    """Extrator de arquivos CSV"""
+
+    def __init__(self, extractors_config_path: Path):
+        super().__init__(extractors_config_path)
+
+    def load_data(self, file_path: Path) -> pd.DataFrame:
         """Extrai dados do CSV"""
-        self.logger.debug("Iniciando extração do CSV...")
-        self.logger.info(f"Arquivo: {file_path}")
         try:
-            df = pd.read_csv(file_path, **self.read_kwargs)
-            self.logger.info(f"Dados: {len(df)} linhas, {len(df.columns)} colunas")
-            self.logger.debug("Extração do CSV... Concluída.")
+            logger.debug("Iniciando extração do CSV...")
+            logger.info(f"Arquivo: {file_path}")
+            df: pd.DataFrame = pd.read_csv(file_path, **self.params_kwargs)
+            logger.info(f"Dados: {len(df)} linhas, {len(df.columns)} colunas")
+            logger.debug("Iniciando extração do CSV... Concluída.")
         except Exception as e:
             msg = f"Erro ao tentar ler o arquivo CSV: {e}"
-            self.logger.exception(msg)
+            logger.exception(msg)
             raise
         return df
 
@@ -53,20 +49,17 @@ class CSVExtractor(DataLoader):
 
 # --- O BLOCO DE TESTE (SMOKE TEST) ---
 if __name__ == "__main__":
-    import yaml
-
-    from fundeb.config.settings import EXTRACTORS_CONFIG_PATH
-
-    with open(EXTRACTORS_CONFIG_PATH, encoding="utf-8") as f:
-        config = yaml.safe_load(f.read())
-    config_params = config["conta_corrente"]["csv"]["params"]
-
-    extractor = CSVExtractor(config_params=config_params)
-
-    test_file = (
+    extractor = CsvLoader(extractors_config_path=settings.extractors_config_path)
+    file_path_test = (
         r"C:\Users\adrsb\OneDrive\Documentos\Projects\FundebProject\data\raw"
         r"\external\bb\conta_corrente\csv\EXTRATO_BANCARIO_CC_AP_MACAPA_2025_01.csv"
     )
-    df = extractor.extract(test_file)
+    df = extractor.run_flow(
+        file_path_test,
+        source="external",
+        origin="bb",
+        module="conta_corrente",
+        file_extension="csv",
+    )
 
-    # print(extractor.validate_schema(df))
+    # display(df.head(3))
