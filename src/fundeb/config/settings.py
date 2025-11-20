@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     gold_dir: Path = data_dir / "gold"
     logs_dir: Path = data_dir / "logs"
     extractors_config_path: Path = (
-        project_root / "src" / "fundeb" / "config" / "extractor_configs.yaml"
+        project_root / "src" / "fundeb" / "config" / "extractors_config.yaml"
     )
     logging_config_path: Path = (
         project_root / "src" / "fundeb" / "config" / "log_config.yaml"
