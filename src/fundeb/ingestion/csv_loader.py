@@ -25,7 +25,8 @@ class CsvLoader(BaseDataLoader):
         try:
             logger.debug("Iniciando extração do CSV...")
             logger.info(f"Arquivo: {file_path}")
-            df: pd.DataFrame = pd.read_csv(file_path, **self.params_kwargs)
+            params = self.params_kwargs or {}
+            df: pd.DataFrame = pd.read_csv(str(file_path), **params)
             logger.info(f"Dados: {len(df)} linhas, {len(df.columns)} colunas")
             logger.debug("Iniciando extração do CSV... Concluída.")
         except Exception as e:
