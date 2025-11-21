@@ -25,6 +25,7 @@ dependencies = [
     "ipykernel>=7.1.0",
     "pandas>=2.3.3",
     "pandera>=0.26.1",
+    "prefect>=3.6.3",
     "pyarrow>=22.0.0",
     "pydantic>=2.12.4",
     "pydantic-settings>=2.12.0",

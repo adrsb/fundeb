@@ -82,10 +82,11 @@ class BaseDataLoader(ABC):
 
     @staticmethod
     @abstractmethod
-    def validate_schema(df: pd.DataFrame, module: str) -> None:
+    def validate_schema(df: pd.DataFrame, file_path: Path, module: str) -> None:
         """Valida se o DataFrame está com o schema esperado
         Args:
             df (pd.DataFrame): DataFrame a ser validado
+            file_path (Path): Path do arquivo
             module (str): Nome do módulo
         Returns:
             bool: True se o schema estiver correto, False caso contrário
@@ -149,7 +150,7 @@ class BaseDataLoader(ABC):
         file_extension = (validated_file_path.suffix).replace(".", "")
         self.get_params(module=module, file_extension=file_extension)
         df = self.load_data(validated_file_path)
-        self.validate_schema(df, module=module)
+        self.validate_schema(df, file_path=validated_file_path, module=module)
         df = self.add_metadata(validated_file_path, df)
         destiny_dir = settings.bronze_dir / source / origin / module
         self.save_to_bronze(df, validated_file_path, destiny_dir=destiny_dir)

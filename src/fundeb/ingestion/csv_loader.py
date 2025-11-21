@@ -33,11 +33,12 @@ class CsvLoader(BaseDataLoader):
             raise
         return df
 
-    def validate_schema(self, df: pd.DataFrame, module: str) -> None:
+    def validate_schema(self, df: pd.DataFrame, file_path: Path, module: str) -> None:
         """
         Valida se o DataFrame está com o schema esperado
         Args:
             df (pd.DataFrame): DataFrame a ser validado
+            file_path (Path): Path do arquivo
             module (str): Nome do módulo
         Returns:
             bool: True se o schema estiver correto, False caso contrário
@@ -52,11 +53,11 @@ class CsvLoader(BaseDataLoader):
 
             try:
                 CurrentAccountCsvValidatorInputSchema.validate(df)
-                logger.info("Schema validado com sucesso.")
+                logger.info(f"Arquivo: {file_path.name}...")
             except Exception as e:
                 msg = f"Validação falhou: {e}"
                 logger.exception(msg)
-        logger.debug("Validação do schema... Concluída.")
+        logger.debug("Validação do schema... Concluída.")\
 
 
 # --- O BLOCO DE TESTE (SMOKE TEST) ---
