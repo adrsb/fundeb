@@ -46,7 +46,7 @@ def get_extractor_instance_task(
     return extractor_instance
 
 
-@task(name="Get Extractor")
+@task(name="Get Params")
 def get_extractor_params_task(
     extractor_instance: BaseDataLoader,
     module_name: str,
@@ -101,7 +101,7 @@ def validate_file_path_task(
 
 
 @materialize(
-    "file://data//raw//external//bb//conta_corrente//csv//EXTRATO_BANCARIO_CC_AP_MACAPA_2025_01.csv",
+    "file://data//raw//external//bb//conta_corrente//csv",
     name="Load Raw Data",
 )
 def load_data_task(
@@ -123,7 +123,7 @@ def validate_schemas_task(
 
 
 @materialize(
-    "file://data//raw//external//bb//conta_corrente//csv//EXTRATO_BANCARIO_CC_AP_MACAPA_2025_01.csv",
+    "file://data//raw//external//bb//conta_corrente//csv",
     name="Add File Metadata",
 )
 def add_metadata_task(
@@ -219,13 +219,13 @@ def run_current_account_concurrently_flow(
         dfs, validate_file_paths, extractor_instance
     )
     dfs_with_metadata.wait()
-    display(dfs_with_metadata[0].result().head())  # type: ignore # noqa: F821
     save_to_bronze_task.map(
         df=dfs_with_metadata,
         file_path=validate_file_paths,
         destiny_dir=destiny_dir,
         extractor_instance=extractor_instance,
     ).wait()
+    display(dfs_with_metadata[0].result().head())  # type: ignore # noqa: F821
 
 
 if __name__ == "__main__":
